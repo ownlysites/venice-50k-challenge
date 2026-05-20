@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# venice-50k-challenge
 
-## Getting Started
+Editorial dare landing page for **venice50kchallenge.com** — the destination for every outbound DM, SMS, postcard, and LinkedIn pitch that uses the Venice $50K hook.
 
-First, run the development server:
+> *"I bet we find you at least $50,000 hiding in your business."* — Dave Ivery, Ownly ONCE LLC.
+
+## Stack
+
+Next.js 16 (App Router · Turbopack) · React 19 · Tailwind v4 (Ownly editorial tokens) · Framer Motion · TypeScript · Runway-generated hero stills + 5-sec loops.
+
+## Run
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env.local   # fill in DBC / Quo / Resend / Apollo creds
+npm run dev                  # http://localhost:3000
+npm run build && npm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Asset pipeline
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+All hero + tile + backdrop images and both video loops are Runway-generated
+via the wrapper at `../tools/runway_gen.py`. To regenerate, run:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+python3 ../tools/runway_gen.py text-to-image --name venice-hero --ratio 1920:1080 "<prompt>"
+python3 ../tools/runway_gen.py image-to-video --name venice-hero-pan _runway_out/venice-hero.png "<prompt>"
+```
 
-## Learn More
+Then `cp _runway_out/*.png public/venice/` and `cp _runway_out/*.mp4 public/loops/`.
 
-To learn more about Next.js, take a look at the following resources:
+## Intake → DBC + Quo + Resend
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+`/app/api/intake/route.ts` is the single intake endpoint. It:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. POSTs a contact to **DBC** (DREAMS Business Cloud / GHL whitelabel) with tags `ownly_venice_50k` + `ownly_source_landing`.
+2. Sends Dave a Quo SMS: `NEW VENICE WAGER — <name>, <biz>, <phone>`.
+3. Triggers a Resend transactional confirmation email in editorial voice.
 
-## Deploy on Vercel
+Each integration no-ops when its env var is missing — the route still returns 200 and routes the visitor to mplannerpro for the scan.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Concierge frame
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+`components/concierge-frame.tsx` intercepts every `data-frame="modal"` link. Frame-friendly hosts (mplannerpro, calendly, ownly-gap-audit, ownly-business-credit-builder, ownly-web-studio, dreamsscore.biz, campbellwa, venice50kchallenge) load inside a full-bleed editorial iframe. Everything else opens in a new tab with a discreet toast.
+
+## Deploy
+
+Auto-deploys to Vercel on push to `main`.
+Domain: `venice50kchallenge.com` + `www.venice50kchallenge.com`.
+
+---
+
+© 2026 Ownly ONCE LLC · VOL.I · NO.01 · MMXXVI
