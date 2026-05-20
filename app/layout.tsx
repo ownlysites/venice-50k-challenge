@@ -4,6 +4,7 @@ import "./globals.css";
 import ConciergeFrame from "@/components/concierge-frame";
 import ApolloTracker from "@/components/apollo-tracker";
 import StructuredData from "@/components/structured-data";
+import IntakeGate from "@/components/intake-gate";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -88,6 +89,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <StructuredData />
         <ApolloTracker />
+        <IntakeGate />
         {children}
         <ConciergeFrame />
       </body>
