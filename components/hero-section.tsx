@@ -74,7 +74,7 @@ export default function HeroSection() {
             style={{ borderRadius: "var(--radius)" }}
           >
             <Image
-              src="/venice/hero.png"
+              src="/venice/hero.avif"
               alt="Venice, Florida coastal causeway at golden hour."
               fill
               priority
@@ -89,7 +89,7 @@ export default function HeroSection() {
               muted
               loop
               playsInline
-              poster="/venice/hero.png"
+              poster="/venice/hero.avif"
               className="absolute inset-0 w-full h-full"
               style={{
                 objectFit: "cover",

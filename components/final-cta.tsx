@@ -17,7 +17,7 @@ export default function FinalCta() {
       }}
     >
       <Image
-        src="/venice/cta-backdrop.png"
+        src="/venice/cta-backdrop.avif"
         alt=""
         fill
         sizes="100vw"

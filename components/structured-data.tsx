@@ -8,7 +8,7 @@ const data = {
       "@id": `${SITE_URL}#org`,
       name: "Ownly ONCE LLC",
       url: SITE_URL,
-      logo: `${SITE_URL}/og.png`,
+      logo: `${SITE_URL}/opengraph-image`,
       sameAs: ["https://ownly1nce.com"],
       founder: {
         "@type": "Person",
@@ -32,7 +32,7 @@ const data = {
       "@id": `${SITE_URL}#business`,
       name: "Ownly ONCE — Venice $50K Wager",
       url: SITE_URL,
-      image: `${SITE_URL}/og.png`,
+      image: `${SITE_URL}/opengraph-image`,
       telephone: "+1-941-277-9876",
       email: "david@ownly1nce.com",
       priceRange: "$$",

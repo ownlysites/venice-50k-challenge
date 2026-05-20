@@ -15,37 +15,37 @@ const TILES: Tile[] = [
     label: "I.",
     title: "Tax credits you didn't claim.",
     body: "FICA tip credit. R&D credit. Employee retention credits. Worth $20K–$120K to most SMBs in our area.",
-    img: "/venice/tile-tax.png",
+    img: "/venice/tile-tax.avif",
   },
   {
     label: "II.",
     title: "Funding already approved for you.",
     body: "$5K–$1.5M working-capital lines based on revenue alone. Most owners don't know they qualify.",
-    img: "/venice/tile-funding.png",
+    img: "/venice/tile-funding.avif",
   },
   {
     label: "III.",
     title: "Expenses bleeding out quietly.",
     body: "Six SaaS subscriptions you forgot. Payroll inefficiencies. Vendor lines never reviewed.",
-    img: "/venice/tile-expenses.png",
+    img: "/venice/tile-expenses.avif",
   },
   {
     label: "IV.",
     title: "AI moves that pay back fast.",
     body: "The two or three places AI actually fits your business — and the seven where it doesn't.",
-    img: "/venice/tile-ai.png",
+    img: "/venice/tile-ai.avif",
   },
   {
     label: "V.",
     title: "Business credit you can't see.",
     body: "$50K–$300K of 0% APR credit lines built around the entity, not you.",
-    img: "/venice/tile-credit.png",
+    img: "/venice/tile-credit.avif",
   },
   {
     label: "VI.",
     title: "Debt that's costing you twice.",
     body: "Debt acceleration strategies that compress 30-year debt to 5–8 without changing income.",
-    img: "/venice/tile-debt.png",
+    img: "/venice/tile-debt.avif",
   },
 ];
 
