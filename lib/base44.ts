@@ -33,7 +33,7 @@ async function call<T = unknown>(
       method,
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.BASE44_API_KEY}`,
+        api_key: process.env.BASE44_API_KEY as string,
       },
       body: body ? JSON.stringify(body) : undefined,
     });
