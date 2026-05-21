@@ -60,7 +60,6 @@ export async function POST(req: NextRequest) {
       content: String(message.body ?? ""),
       occurred_at: String(message.dateAdded ?? new Date().toISOString()),
       is_unread: direction === "inbound",
-      external_id: String(message.id ?? ""),
     });
   }
 
