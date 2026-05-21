@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head><title>D-ID Agent Diagnostic</title></head>
+<body style="font-family:system-ui;padding:24px;max-width:800px;margin:auto;">
+<h1>D-ID Agent Diagnostic</h1>
+<p>Watch this page for a few seconds. If the agent doesn't render below, credentials are stale.</p>
+<div id="did-agent-container" style="width:100%;height:600px;border:1px solid #ccc;"></div>
+<script type="module" 
+  src="https://agent.d-id.com/v2/index.js"
+  data-mode="fabio"
+  data-client-key="ck_YkyAGa70D0b7JZB2-x9r0"
+  data-agent-id="v2_agt_ov690VBm"
+  data-name="did-agent"
+  data-monitor="true">
+</script>
+<script>
+setTimeout(() => {
+  const c = document.getElementById('did-agent-container');
+  const t = document.querySelector('.didagent_target');
+  document.body.insertAdjacentHTML('beforeend', `<pre style="background:#f0f0f0;padding:12px;margin-top:24px;">
+DID_AGENTS_API loaded: ${typeof window.DID_AGENTS_API !== 'undefined'}
+Container size: ${c.offsetWidth}x${c.offsetHeight}
+.didagent_target exists: ${!!t}
+.didagent_target size: ${t ? t.offsetWidth + 'x' + t.offsetHeight : 'n/a'}
+Iframes on page: ${document.querySelectorAll('iframe').length}
+Inside container: ${c.querySelectorAll('iframe').length}
+</pre>`);
+}, 5000);
+</script>
+</body>
+</html>
