@@ -12,7 +12,8 @@
  * Contact, SitDown, Scan) from upstream sources.
  */
 
-const BASE_URL = "https://app.base44.com/api";
+// Base44 per-app REST host (NOT app.base44.com). Pattern: https://{app-slug}-core.base44.app/api
+const BASE_URL = process.env.BASE44_BASE_URL || "https://ownly-command-core.base44.app/api";
 const APP_ID = process.env.BASE44_APP_ID || "6a0d2a76e5127bc3295500dd";
 
 function ready(): boolean {
@@ -50,7 +51,7 @@ async function call<T = unknown>(
 }
 
 export async function createEntity<T = unknown>(entity: string, payload: Record<string, unknown>) {
-  return call<T>("POST", `/apps/${APP_ID}/entities/${entity}/`, payload);
+  return call<T>("POST", `/entities/${entity}`, payload);
 }
 
 export async function queryEntity<T = unknown>(
@@ -58,13 +59,12 @@ export async function queryEntity<T = unknown>(
   filter: Record<string, unknown>,
   limit = 5
 ) {
-  // Base44 query — pass filter as JSON in body. Endpoint pattern best-effort;
-  // adjust once Base44 API behavior is verified in staging.
+  // Base44 GET /entities/{name} — filter via query param `q` (JSON-encoded) + `limit`.
   const qs = new URLSearchParams({
     q: JSON.stringify(filter),
     limit: String(limit),
   });
-  return call<{ entities: T[] }>("GET", `/apps/${APP_ID}/entities/${entity}/?${qs.toString()}`);
+  return call<{ entities: T[] }>("GET", `/entities/${entity}?${qs.toString()}`);
 }
 
 export async function findOrCreateContact(input: {
