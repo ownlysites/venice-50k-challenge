@@ -1,24 +1,15 @@
-/**
- * Scan completion webhook → Base44 Scan + Contact upsert
- *
- * One route for all 3 scan types. Caller posts scan_type in body:
- *   - 'business_credit_builder' (ownly-business-credit-builder.vercel.app)
- *   - 'ai_gap_audit'             (ownly-gap-audit.vercel.app)
- *   - 'find_my_money'            (app.mplannerpro.com chat embed)
- *
- * Verify shared SCAN_WEBHOOK_SECRET header. Upsert Contact, create Scan.
- */
 import { NextRequest, NextResponse } from "next/server";
-import { base44 } from "../../../../lib/base44";
+import { base44, findOrCreateContact } from "../../../../lib/base44";
 
 export const runtime = "nodejs";
 
-const ALLOWED_TYPES = new Set(["business_credit_builder", "ai_gap_audit", "find_my_money"]);
+const SCAN_TYPES = ["business_credit_builder", "ai_gap_audit", "find_my_money"] as const;
+type ScanType = (typeof SCAN_TYPES)[number];
 
 function isAuthorized(req: NextRequest): boolean {
   const expected = process.env.SCAN_WEBHOOK_SECRET;
   if (!expected) return true;
-  const got = req.headers.get("x-webhook-secret");
+  const got = req.headers.get("x-webhook-secret") ?? "";
   return got === expected;
 }
 
@@ -26,58 +17,51 @@ export async function POST(req: NextRequest) {
   if (!isAuthorized(req)) {
     return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
   }
+  const body = (await req.json().catch(() => ({}))) as Record<string, unknown>;
 
-  const payload = (await req.json().catch(() => ({}))) as Record<string, unknown>;
-
-  const scanType = String(payload.scan_type ?? "");
-  if (!ALLOWED_TYPES.has(scanType)) {
-    return NextResponse.json({ ok: false, error: `unknown scan_type: ${scanType}` }, { status: 400 });
+  const scan_type = body.scan_type as ScanType;
+  if (!SCAN_TYPES.includes(scan_type)) {
+    return NextResponse.json({ ok: false, error: "invalid scan_type" }, { status: 400 });
   }
 
-  const email = String(payload.email ?? "");
-  const phone = String(payload.phone ?? "");
-  const name = String(payload.name ?? "");
-  const business = String(payload.business ?? "");
-  const score = typeof payload.score === "number" ? payload.score : undefined;
-  const completed = String(payload.completed_at ?? new Date().toISOString());
-  const partnerRecs = Array.isArray(payload.partner_recommendations)
-    ? (payload.partner_recommendations as string[])
-    : [];
-  const raw = payload.raw_results ? JSON.stringify(payload.raw_results) : undefined;
+  const email = (body.email as string) ?? undefined;
+  const phone = (body.phone as string) ?? undefined;
+  const name = (body.name as string) ?? undefined;
+  const business = (body.business as string) ?? undefined;
 
-  if (!email && !phone && !name) {
-    return NextResponse.json({ ok: true, note: "no identifiable lead" });
-  }
+  // DEBUG: log Base44 key state
+  console.log("[scans] base44.ready():", base44.ready(), "key len:", (process.env.BASE44_API_KEY || "").length);
 
-  // Contact upsert
-  const tagMap: Record<string, string> = {
-    business_credit_builder: "ownly_scan_business_credit",
-    ai_gap_audit: "ownly_scan_gap_audit",
-    find_my_money: "ownly_scan_find_my_money",
-  };
-  const c = await base44.findOrCreateContact({
+  const contact = await findOrCreateContact({
     name,
     business,
     email,
     phone,
-    tags: ["ownly_source_scan", tagMap[scanType]],
+    tags: ["ownly_source_scan", `ownly_scan_${scan_type}`],
   });
+  console.log("[scans] contact result:", JSON.stringify(contact));
 
-  await base44.createEntity("Scan", {
-    contact_id: c.contactId ?? undefined,
-    contact_name: name || email || "Unknown",
+  const scan = await base44.createEntity("Scan", {
+    scan_type,
+    contact_id: contact.contactId,
+    contact_name: name,
     business,
-    scan_type: scanType,
-    completed_at: completed,
-    score,
-    partner_recommendations: partnerRecs,
+    score: body.score,
+    partner_recommendations: body.partner_recommendations ?? [],
+    completed_at: body.completed_at ?? new Date().toISOString(),
+    raw_results: body.raw_results,
     follow_up_status: "pending",
-    raw_results: raw,
+    external_id: (body.external_id as string) ?? "",
   });
+  console.log("[scans] scan result:", JSON.stringify(scan));
 
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, debug: { ready: base44.ready(), contact: contact.error, scan: scan.error, status: scan.status } });
 }
 
 export async function GET() {
-  return NextResponse.json({ ok: true, route: "/api/webhooks/scans", types: [...ALLOWED_TYPES] });
+  return NextResponse.json({
+    ok: true,
+    route: "/api/webhooks/scans",
+    types: SCAN_TYPES,
+  });
 }
