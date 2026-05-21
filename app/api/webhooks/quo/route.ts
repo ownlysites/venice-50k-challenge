@@ -56,8 +56,8 @@ export async function POST(req: NextRequest) {
     content: body,
     occurred_at: occurred,
     is_unread: direction === "inbound",
-    external_id: externalId,
   });
+  void externalId;
 
   return NextResponse.json({ ok: true });
 }
