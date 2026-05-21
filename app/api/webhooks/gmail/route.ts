@@ -60,7 +60,6 @@ export async function POST(req: NextRequest) {
     content: `Pub/Sub push for ${decoded.emailAddress ?? "unknown"} historyId=${decoded.historyId ?? ""}`,
     occurred_at: payload.message?.publishTime ?? new Date().toISOString(),
     is_unread: true,
-    external_id: payload.message?.messageId ?? "",
   });
 
   return NextResponse.json({ ok: true });
