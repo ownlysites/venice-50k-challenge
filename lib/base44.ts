@@ -76,9 +76,10 @@ export async function findOrCreateContact(input: {
   tags?: string[];
 }): Promise<{ contactId: string | null; created: boolean; error?: string }> {
   // Try to find by email first, then phone, then linkedin
+  // emails + phones are arrays on the Contact schema — must use $in operator.
   const candidates: Record<string, unknown>[] = [];
-  if (input.email) candidates.push({ emails: input.email });
-  if (input.phone) candidates.push({ phones: input.phone });
+  if (input.email) candidates.push({ emails: { $in: [input.email] } });
+  if (input.phone) candidates.push({ phones: { $in: [input.phone] } });
   if (input.linkedin_url) candidates.push({ linkedin_url: input.linkedin_url });
 
   for (const filter of candidates) {
