@@ -1,6 +1,6 @@
 export const CTA = {
   scan: "https://app.mplannerpro.com/abce1ffefc/chat?pg=69539a14a3",
-  calendly: "https://calendly.com/daveivery/meetandgreet",
+  calendly: "https://calendly.com/daveivery/sit_down",
   gapAudit: "https://ownly-gap-audit.vercel.app/",
   dreams: "https://dreamsscore.biz/?refid=AA3946",
   credit: "https://ownly-business-credit-builder.vercel.app/",
