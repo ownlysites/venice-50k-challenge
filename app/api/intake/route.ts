@@ -23,7 +23,7 @@ type IntakeBody = {
   source?: string;
 };
 
-const SCAN_REDIRECT = "https://app.mplannerpro.com/abce1ffefc/chat?pg=69539a14a3";
+const SCAN_REDIRECT = "https://app.mplannerpro.com/abce1ffefc/chat?pg=dea8573397";
 
 function digits(s?: string) {
   return (s ?? "").replace(/[^\d+]/g, "");
